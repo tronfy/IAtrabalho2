@@ -22,15 +22,20 @@ void writeArray(char *fname, double *out, int n) {
 }
 
 int main() {
+  // Constantes c1, c2 do modelo inicial de enxame de partículas
+  double c1[2] = {0.05, 0.05};
+  double c2[2] = {0.01, 0.01};
 
-  double c1[2] = {0.05, 0.05}; // Constante alfa no modelo predator-prey
-  double c2[2] = {0.01, 0.01}; // Constante A no modelo predator-prey
-  double c3[2] = {0.00, 0.00}; // Constante lambda no modelo predator-prey
+  double alpha = 1.00;  // escala da atração dos predadores
+  double lambda = 1.00; // escala da distância [média] dos predadore[s]
+  double A = 1.00;      // escala da influência dos predadores
 
+  // numero de particulas
   int Nprey = 10;
   int Npred = 10;
+
   swarm S;
-  initSwarm(&S, Nprey, Npred, 2, c1, c2, c3);
+  initSwarm(&S, Nprey, Npred, 2, c1, c2, alpha, lambda, A);
 
   int tmax = 1000;
   double out[tmax];

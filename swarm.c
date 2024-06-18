@@ -6,7 +6,7 @@
 #include <time.h>
 
 void initSwarm(swarm *S, int Nprey, int Npred, int dim, double *c1, double *c2,
-               double *c3) {
+               double alpha, double lambda, double A) {
   /*
       Inicializa um enxame com posições aleatórias para as partículas.
       Nprey: número de presas
@@ -55,8 +55,13 @@ void initSwarm(swarm *S, int Nprey, int Npred, int dim, double *c1, double *c2,
   // Vetores coeficientes
   S->c1 = c1;
   S->c2 = c2;
-  S->c3 = c3;
+  // Parâmetros
+  S->alpha = alpha;
+  S->lambda = lambda;
+  S->A = A;
+
   S->Nprey = Nprey;
+  S->Npred = Npred;
 }
 
 void freeSwarm(swarm *S) {
