@@ -1,0 +1,10 @@
+{
+  "files.associations": {
+    "dunstrc": "properties",
+    ".zsh_aliases": "shellscript",
+    "*.json5": "jsonc",
+    "*.conf": "properties",
+    "stdlib.h": "c",
+    "particles.h": "c"
+  }
+}
