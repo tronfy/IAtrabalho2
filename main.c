@@ -27,9 +27,10 @@ int main() {
   double c2[2] = {0.01, 0.01}; // Constante A no modelo predator-prey
   double c3[2] = {0.00, 0.00}; // Constante lambda no modelo predator-prey
 
-  int n = 10;
+  int Nprey = 10;
+  int Npred = 10;
   swarm S;
-  initSwarm(&S, n, 2, c1, c2);
+  initSwarm(&S, Nprey, Npred, 2, c1, c2, c3);
 
   int tmax = 1000;
   double out[tmax];
@@ -39,7 +40,7 @@ int main() {
   }
 
   char *fname = (char *)malloc(21 * sizeof(char));
-  sprintf(fname, "resultados_N=%04d.dat", n);
+  sprintf(fname, "resultados_N=%04d.dat", Nprey);
   writeArray(fname, out, tmax);
 
   return 0;
