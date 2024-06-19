@@ -2,6 +2,8 @@
 #ifndef PARTICLES_H
 #define PARTICLES_H
 
+#define V_MAX 1.0
+
 typedef struct {
   double *x;     // posição atual
   double *x_opt; // posição ótima
@@ -11,8 +13,11 @@ typedef struct {
 
 void initParticle(particle *p, int dim, double *x_0);
 void freeParticle(particle *p);
-void updateVelocity(particle *p, double *c1, double *c2, double *swarm_opt);
-void updatePosition(particle *p, double (*cost)(double *));
+
+void updatePreyVelocity(particle *p, double *c1, double *c2, double *swarm_opt, double *A, double lambda, double *Xpred);
+void updatePredVelocity(particle *p, double alpha, double *swarm_opt);
+void updatePreyPosition(particle *p, double (*cost)(double *));
+void updatePredPosition(particle *p);
 
 // TODO: adaptar updateVelocity para updatePreyVelocity, recebendo também o
 // parâmetro λ. v_i(t+1) já está sendo calculado, só falta somar com o termo ->

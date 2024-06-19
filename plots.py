@@ -1,38 +1,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 plt.rcParams.update({'font.size': 16})
 
-data = np.loadtxt("resultados_N=5.dat")
-plt.plot(data,label="N=5")
-data = np.loadtxt("resultados_N=10.dat")
-plt.plot(data,label="N=10")
-data = np.loadtxt("resultados_N=25.dat")
-plt.plot(data,label="N=25")
-data = np.loadtxt("resultados_N=50.dat")
-plt.plot(data,label="N=50")
+N = 10
+FILE = "result_N=50_P=50_alpha=1.00_lambda=1.00_A={1.00,1.00}_"
+RESULTADOS = "resultados_novo"
+OUTDIR = "plots"
 
-plt.legend()
-plt.xscale("log")
-plt.yscale("log")
-plt.xlabel("Número de iterações")
-plt.ylabel("Função objetivo")
-plt.suptitle("Prioridade para o ótimo individual")
-plt.show()
+if not os.path.exists(RESULTADOS): os.makedirs(RESULTADOS)
+if not os.path.exists(OUTDIR): os.makedirs(OUTDIR)
 
-data = np.loadtxt("resultadosb_N=5.dat")
-plt.plot(data,label="N=5")
-data = np.loadtxt("resultadosb_N=10.dat")
-plt.plot(data,label="N=10")
-data = np.loadtxt("resultadosb_N=25.dat")
-plt.plot(data,label="N=25")
-data = np.loadtxt("resultadosb_N=50.dat")
-plt.plot(data,label="N=50")
+def run(results_dir, i):
+  os.system(f"./main {results_dir} {i}")
 
-plt.legend()
-plt.xscale("log")
-plt.yscale("log")
-plt.xlabel("Número de iterações")
-plt.ylabel("Função objetivo")
-plt.suptitle("Prioridade para o ótimo do enxame")
-plt.show()
+
+def plot_all():
+  for i in range(N):
+    data = np.loadtxt(f"{RESULTADOS}/{FILE}{i}.txt")
+    plt.plot(data,label=f"Simulação {i}")
+
+  plt.legend()
+  plt.xscale("log")
+  plt.yscale("log")
+  plt.xlabel("Número de iterações")
+  plt.ylabel("Função objetivo")
+  plt.suptitle("Prioridade para o ótimo individual")
+  
+  plt.savefig(f"{OUTDIR}/{FILE}.png")
+
+for i in range(1, N):
+  run(RESULTADOS, i)
+
+plot_all()

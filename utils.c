@@ -35,9 +35,18 @@ void copyArray(double* to, double* from, int len){
         to[i] = from[i];
 }
 
-double norm(double* v, int len){
+double arrayNorm(double* v, int len){
     double out = 0;
     for (int i=0; i<len; i++)
         out += v[i]*v[i];
     return sqrt(out);    
+}
+
+double* arrayScale(double* u, double scale, int len) {
+  double *out = malloc(len*sizeof(double));
+    assert(out);
+    for (int i=0; i<len; i++){
+        out[i] = scale * u[i];
+    }
+    return out;
 }

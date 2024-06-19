@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define PI 3.141592684
 
@@ -21,18 +22,23 @@ void writeArray(char *fname, double *out, int n) {
   fclose(fp);
 }
 
-int main() {
+int main(int argc, char const *argv[]) {
+  if (argc < 3) {
+    printf("Usage: %s <outdir> <idx>\n", argv[0]);
+    return 1;
+  }
+
   // Constantes c1, c2 do modelo inicial de enxame de partículas
   double c1[2] = {0.05, 0.05};
   double c2[2] = {0.01, 0.01};
 
-  double alpha = 1.00;  // escala da atração dos predadores
-  double lambda = 1.00; // escala da distância [média] dos predadore[s]
-  double A = 1.00;      // escala da influência dos predadores
+  double alpha = 1;        // escala da atração dos predadores
+  double lambda = 1;       // escala da distância dos predadores
+  double A[2] = {1, 1}; // escala da influência dos predadores
 
   // numero de particulas
-  int Nprey = 10;
-  int Npred = 10;
+  int Nprey = 50;
+  int Npred = 50;
 
   swarm S;
   initSwarm(&S, Nprey, Npred, 2, c1, c2, alpha, lambda, A);
@@ -44,8 +50,8 @@ int main() {
     out[t] = rastrigin(S.x_opt);
   }
 
-  char *fname = (char *)malloc(21 * sizeof(char));
-  sprintf(fname, "resultados_N=%04d.dat", Nprey);
+  char *fname = (char *)malloc(100 * sizeof(char));
+  sprintf(fname, "%s/result_N=%02d_P=%02d_alpha=%.2f_lambda=%.2f_A={%.2f,%.2f}_%s.txt", argv[1], Nprey, Npred, alpha, lambda, A[0], A[1], argv[2]);
   writeArray(fname, out, tmax);
 
   return 0;

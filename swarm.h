@@ -22,11 +22,11 @@ typedef struct {
 
   double alpha;  // escala da atração dos predadores
   double lambda; // escala da distância [média] dos predadore[s]
-  double A;      // escala da influência dos predadores
+  double *A;      // escala da influência dos predadores
 } swarm;
 
 void initSwarm(swarm *S, int Nprey, int Npred, int dim, double *c1, double *c2,
-               double alpha, double lambda, double A);
+               double alpha, double lambda, double *A);
 void freeSwarm(swarm *S);
 void updateSwarm(swarm *S, double (*cost)(double *));
 

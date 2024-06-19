@@ -6,18 +6,18 @@
 #include <time.h>
 
 void initSwarm(swarm *S, int Nprey, int Npred, int dim, double *c1, double *c2,
-               double alpha, double lambda, double A) {
+               double alpha, double lambda, double *A) {
   /*
       Inicializa um enxame com posições aleatórias para as partículas.
-      Nprey: número de presas
-      Npred: número de predadores
+      Nprey: número de PRESAS
+      Npred: número de PREDADORES
       dim: dimensão do espaço de busca
   */
 
-  // srand(time(NULL));
-  srand(0);
+  srand(time(NULL));
+  // srand(0);
 
-  // == presas ==
+  // == PRESAS ==
   S->prey = malloc(Nprey * sizeof(particle));
   assert(S->prey);
 
@@ -37,7 +37,7 @@ void initSwarm(swarm *S, int Nprey, int Npred, int dim, double *c1, double *c2,
     S->x_opt[s] = 2 * S->x_opt[s] - 1;
   }
 
-  // == predadores ==
+  // == PREDADORES ==
   S->pred = malloc(Npred * sizeof(particle));
   assert(S->pred);
 
@@ -79,13 +79,34 @@ void updateSwarm(swarm *S, double (*cost)(double *)) {
   // Índice inicial da melhor partícula é -1
   int id_opt = -1;
 
-  // TODO: atualizar presas (updatePreyVelocity) e predadores
-  // (updatePredVelocity) separadamente
+  // Atualiza posições dos PREDADORES
+  for (int i = 0; i < S->Npred; i++) {
+    updatePredVelocity(&S->pred[i], S->alpha, S->x_opt);
+    updatePredPosition(&S->pred[i]);
+  }
 
-  // Atualiza posições das partículas e busca novo valor ótimo
+  // Calcular a pos media dos PREDADORES para passar para updatePreyVelocity
+  double *mean_pred = malloc(S->dim * sizeof(double));
+  assert(mean_pred);
+  
+  for (int d = 0; d < S->dim; d++) {
+    mean_pred[d] = 0;
+  }
+
+  // para cada dimensão
+  for (int d = 0; d < S->dim; d++) {
+    // somar as posições dos PREDADORES
+    for (int i = 0; i < S->Npred; i++) {
+      mean_pred[d] += S->pred[i].x[d];
+    }
+    // dividir pela quantidade de PREDADORES
+    mean_pred[d] /= S->Npred;
+  }
+
+  // Atualiza posições das PRESAS e busca novo valor ótimo
   for (int i = 0; i < S->Nprey; i++) {
-    updateVelocity(&S->prey[i], S->c1, S->c2, S->x_opt);
-    updatePosition(&S->prey[i], cost);
+    updatePreyVelocity(&S->prey[i], S->c1, S->c2, S->x_opt, S->A, S->lambda, mean_pred);
+    updatePreyPosition(&S->prey[i], cost);
     double f_new = cost(S->prey[i].x_opt);
     if (f_opt > f_new) {
       f_opt = f_new;
@@ -98,3 +119,5 @@ void updateSwarm(swarm *S, double (*cost)(double *)) {
     copyArray(S->x_opt, S->prey[id_opt].x_opt, S->dim);
   }
 }
+
+// gcc utils.c particles.c swarm.c main.c -o main -lm; ./main
