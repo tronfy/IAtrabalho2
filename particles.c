@@ -1,9 +1,9 @@
 #include "particles.h"
 #include "utils.h"
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 void initParticle(particle *p, int dim, double *x_0) {
   /*
@@ -47,7 +47,7 @@ void updateVelocity(particle *p, double *c1, double *c2, double *swarm_opt) {
   //    p: partícula a ser atualizada
   //    c1 e c2: vetores de coeficientes
   //    swarm_opt: vetor ótimo do enxame
-  
+
   // Termo individual da velocidade
   double *aux_sub1 = arraySub(p->x_opt, p->x, p->dim);
   double *aux_mul1 = arrayMul(c1, aux_sub1, p->dim);
@@ -72,7 +72,8 @@ void updateVelocity(particle *p, double *c1, double *c2, double *swarm_opt) {
 
 */
 
-void updatePreyVelocity(particle *p, double *c1, double *c2, double *swarm_opt, double *A, double lambda, double *Xpred) {
+void updatePreyVelocity(particle *p, double *c1, double *c2, double *swarm_opt,
+                        double *A, double lambda, double *Xpred) {
   //    Função para atualizar a velocidade de uma partícula.
   //    p:         ponteiro da partícula a ser atualizada
   //    c1 e c2:   vetores de coeficientes
@@ -80,8 +81,9 @@ void updatePreyVelocity(particle *p, double *c1, double *c2, double *swarm_opt, 
 
   //    A:         vetor influência do predator
   //    lambda:    fator de escala para a distância predador-presa
-  //    Xpred:     a posição média (t+1) do grupo de PREDADORES (supõe que está executando após updatePredPosition)
-  
+  //    Xpred:     a posição média (t+1) do grupo de PREDADORES (supõe que está
+  //    executando após updatePredPosition)
+
   // Termo individual da velocidade
   double *aux_sub1 = arraySub(p->x_opt, p->x, p->dim);
   double *aux_mul1 = arrayMul(c1, aux_sub1, p->dim);
@@ -104,18 +106,26 @@ void updatePreyVelocity(particle *p, double *c1, double *c2, double *swarm_opt, 
 
   // AQUI, P->v GUARDA O TERMO Vi(t+1) da eq (7). Falta somar A*exp{etc,etc...}
   // Calculo de A*exp(etc,etc)
-  aux_sub1 = arraySub(p->x, Xpred, p->dim);                          // Xprey - Xpred
+  aux_sub1 = arraySub(p->x, Xpred, p->dim); // Xprey - Xpred
   double exponencial = exp((-lambda) * arrayNorm(aux_sub1, p->dim)); // exp(etc)
-  double *aux_scale = arrayScale(A, exponencial, p->dim);            // A*exp(etc)
+  // printf("exponencial: %lf\n", exponencial);
+  double *aux_scale = arrayScale(A, exponencial, p->dim); // A*exp(etc)
+  // printf("aux_scale: %lf %lf\n", aux_scale[0], aux_scale[1]);
   aux_v = p->v;
-  p->v = arraySum(p->v, aux_scale, p->dim);                          // Vi(t+1) + A*exp(etc)
+  // printf("v: %lf %lf -> ", p->v[0], p->v[1]);
+  p->v = arraySum(p->v, aux_scale, p->dim); // Vi(t+1) + A*exp(etc)
+  // printf("v: %lf %lf\n", p->v[0], p->v[1]);
+
+  // printf("%lf %lf (%lf) -> ", arrayNorm(p->v, p->dim), p->v[0], p->v[1]);
 
   // Controle de velocidade
   if (arrayNorm(p->v, p->dim) >= V_MAX) {
-    double* aux_v2 = p->v;
-    p->v = arrayScale(p->v, V_MAX/arrayNorm(p->v, p->dim), p->dim);
+    double *aux_v2 = p->v;
+    p->v = arrayScale(p->v, V_MAX / arrayNorm(p->v, p->dim), p->dim);
     free(aux_v2);
   }
+
+  // printf("%lf %lf (%lf)\n", arrayNorm(p->v, p->dim), p->v[0], p->v[1]);
 
   free(aux_sub1);
   free(aux_scale);
@@ -125,9 +135,17 @@ void updatePreyVelocity(particle *p, double *c1, double *c2, double *swarm_opt, 
 }
 
 void updatePredVelocity(particle *p, double alpha, double *swarm_opt) {
+  // printf("opt: %lf %lf\n", swarm_opt[0], swarm_opt[1]);
+  // printf("x: %lf %lf\n", p->x[0], p->x[1]);
+
   double *aux_sub = arraySub(swarm_opt, p->x, p->dim);
+
+  // printf("sub: %lf %lf\n", aux_sub[0], aux_sub[1]);
+
   double *aux_v = p->v;
   p->v = arrayScale(aux_sub, alpha, p->dim);
+
+  // printf("D: %lf %lf\n", p->v[0], p->v[1]);
 
   free(aux_sub);
   free(aux_v);
@@ -160,7 +178,7 @@ void updatePredPosition(particle *p) {
       Função para atualizar a posição de um PREDADOR.
       p: partícula a ser atualizada
   */
-  
+
   double *aux_x = p->x;
   p->x = arraySum(aux_x, p->v, p->dim);
   free(aux_x);

@@ -6,7 +6,7 @@
 #include <time.h>
 
 void initSwarm(swarm *S, int Nprey, int Npred, int dim, double *c1, double *c2,
-               double alpha, double lambda, double *A) {
+               double alpha, double lambda, double *A, int seed) {
   /*
       Inicializa um enxame com posições aleatórias para as partículas.
       Nprey: número de PRESAS
@@ -14,8 +14,9 @@ void initSwarm(swarm *S, int Nprey, int Npred, int dim, double *c1, double *c2,
       dim: dimensão do espaço de busca
   */
 
-  srand(time(NULL));
+  // srand(time(NULL));
   // srand(0);
+  srand(seed);
 
   // == PRESAS ==
   S->prey = malloc(Nprey * sizeof(particle));
@@ -47,7 +48,7 @@ void initSwarm(swarm *S, int Nprey, int Npred, int dim, double *c1, double *c2,
       aux_x[s] = ((double)rand()) / ((double)RAND_MAX);
       aux_x[s] = 2 * aux_x[s] - 1;
     }
-    initParticle(&S->prey[i], dim, aux_x);
+    initParticle(&S->pred[i], dim, aux_x);
   }
 
   // Dimensão
@@ -88,7 +89,7 @@ void updateSwarm(swarm *S, double (*cost)(double *)) {
   // Calcular a pos media dos PREDADORES para passar para updatePreyVelocity
   double *mean_pred = malloc(S->dim * sizeof(double));
   assert(mean_pred);
-  
+
   for (int d = 0; d < S->dim; d++) {
     mean_pred[d] = 0;
   }
@@ -105,7 +106,8 @@ void updateSwarm(swarm *S, double (*cost)(double *)) {
 
   // Atualiza posições das PRESAS e busca novo valor ótimo
   for (int i = 0; i < S->Nprey; i++) {
-    updatePreyVelocity(&S->prey[i], S->c1, S->c2, S->x_opt, S->A, S->lambda, mean_pred);
+    updatePreyVelocity(&S->prey[i], S->c1, S->c2, S->x_opt, S->A, S->lambda,
+                       mean_pred);
     updatePreyPosition(&S->prey[i], cost);
     double f_new = cost(S->prey[i].x_opt);
     if (f_opt > f_new) {

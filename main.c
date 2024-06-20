@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #define PI 3.141592684
@@ -23,8 +24,10 @@ void writeArray(char *fname, double *out, int n) {
 }
 
 int main(int argc, char const *argv[]) {
-  if (argc < 3) {
-    printf("Usage: %s <outdir> <idx>\n", argv[0]);
+  if (argc < 10) {
+    printf("Usage: %s <outdir> <idx> <seed> <Nprey> <Npred> <alpha> <lambda> "
+           "<A.x> <A.y>\n",
+           argv[0]);
     return 1;
   }
 
@@ -32,16 +35,19 @@ int main(int argc, char const *argv[]) {
   double c1[2] = {0.05, 0.05};
   double c2[2] = {0.01, 0.01};
 
-  double alpha = 1;        // escala da atração dos predadores
-  double lambda = 1;       // escala da distância dos predadores
-  double A[2] = {1, 1}; // escala da influência dos predadores
+  double alpha = atof(argv[6]);  // escala da atração dos predadores
+  double lambda = atof(argv[7]); // escala da distância dos predadores
+  double A[2] = {atof(argv[8]),
+                 atof(argv[9])}; // escala da influência dos predadores
 
   // numero de particulas
-  int Nprey = 50;
-  int Npred = 50;
+  int Nprey = atoi(argv[4]);
+  int Npred = atoi(argv[5]);
+
+  int seed = atoi(argv[3]);
 
   swarm S;
-  initSwarm(&S, Nprey, Npred, 2, c1, c2, alpha, lambda, A);
+  initSwarm(&S, Nprey, Npred, 2, c1, c2, alpha, lambda, A, seed);
 
   int tmax = 1000;
   double out[tmax];
@@ -51,7 +57,9 @@ int main(int argc, char const *argv[]) {
   }
 
   char *fname = (char *)malloc(100 * sizeof(char));
-  sprintf(fname, "%s/result_N=%02d_P=%02d_alpha=%.2f_lambda=%.2f_A={%.2f,%.2f}_%s.txt", argv[1], Nprey, Npred, alpha, lambda, A[0], A[1], argv[2]);
+  sprintf(fname,
+          "%s/result_N=%02d_P=%02d_alpha=%.2f_lambda=%.2f_A=%.2f,%.2f_%s.txt",
+          argv[1], Nprey, Npred, alpha, lambda, A[0], A[1], argv[2]);
   writeArray(fname, out, tmax);
 
   return 0;
