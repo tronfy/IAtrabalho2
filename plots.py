@@ -7,14 +7,14 @@ from time import time
 # plt.rcParams.update({"font.size": 16})
 
 NSIMS = 100
-NPRESAS = 10
-NPREDS = 5
+NPRESAS = 10  # 1 <= N <= 99
+NPREDS = 5  # 1 <= P <= 99
 ALPHA = 5.0
 LAMBDA = 3.0
 A = [2, 2]
 FILE = f"result_N={NPRESAS:2.0f}_P={NPREDS:02.0f}_alpha={ALPHA:3.2f}_lambda={LAMBDA:3.2f}_A={A[0]:3.2f},{A[1]:3.2f}_"
-RESULTADOS = "res_teste"
-OUTDIR = "plots_teste"
+RESULTADOS = "res"
+OUTDIR = "plots"
 
 if not os.path.exists(RESULTADOS):
     os.makedirs(RESULTADOS)
